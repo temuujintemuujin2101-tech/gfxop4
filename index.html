@@ -1,536 +1,895 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GFXOP4 — Roblox GFX Resources</title>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+'use client';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, Menu, X, Star, Check, ArrowRight, Mail, ExternalLink, Zap, Shield, Clock, Users, Award, TrendingUp } from 'lucide-react';
 
-  :root {
-    --blue: #3B82F6;
-    --blue-dark: #1D4ED8;
-    --purple: #7C3AED;
-    --purple-dark: #5B21B6;
-    --dark: #0A0A14;
-    --dark2: #0F0F20;
-    --dark3: #14142A;
-    --card: #1A1A2E;
-    --card2: #16213E;
-    --border: rgba(255,255,255,0.08);
-    --text: #E2E8F0;
-    --muted: #94A3B8;
-    --accent: #60A5FA;
-  }
+/* ─── DISCORD / ROBLOX SVGs ─── */
+const DiscordIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.015.043.032.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+  </svg>
+);
+const RobloxIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3.332 0L0 20.669l17.334 3.331L20.668 3.331zm9.166 14.001l-3.999-.768.768-3.999 3.999.768z"/>
+  </svg>
+);
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--dark);
-    color: var(--text);
-    overflow-x: hidden;
-    min-height: 100vh;
-  }
-
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 2.5rem;
-    height: 64px;
-    background: rgba(10,10,20,0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  .logo {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: 2px;
-    color: #fff;
-    text-decoration: none;
-    text-transform: uppercase;
-  }
-  .logo span { color: var(--accent); }
-  .nav-right { display: flex; gap: 12px; align-items: center; }
-  .btn-outline {
-    padding: 8px 18px; border-radius: 8px;
-    border: 1.5px solid rgba(96,165,250,0.5);
-    background: transparent; color: var(--accent);
-    font-size: 0.875rem; font-weight: 600; cursor: pointer;
-    text-decoration: none; transition: all 0.2s;
-  }
-  .btn-outline:hover { background: rgba(96,165,250,0.1); border-color: var(--accent); }
-  .btn-primary {
-    padding: 8px 18px; border-radius: 8px;
-    background: var(--blue); color: #fff;
-    font-size: 0.875rem; font-weight: 600; cursor: pointer;
-    text-decoration: none; border: none; transition: all 0.2s;
-  }
-  .btn-primary:hover { background: var(--blue-dark); }
-
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    position: relative;
-    padding: 8rem 2rem 4rem;
-    overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 60%, rgba(59,130,246,0.15) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 20% 30%, rgba(124,58,237,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(96,165,250,0.1) 0%, transparent 60%);
-  }
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 6px 14px; border-radius: 100px;
-    border: 1px solid rgba(96,165,250,0.3);
-    background: rgba(96,165,250,0.08);
-    color: var(--accent); font-size: 0.8rem; font-weight: 600;
-    letter-spacing: 0.05em; text-transform: uppercase;
-    margin-bottom: 1.5rem; position: relative; z-index: 1;
-  }
-  .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  h1 {
-    font-family: 'Black Han Sans', sans-serif;
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    letter-spacing: -1px; line-height: 1.05;
-    color: #fff; position: relative; z-index: 1;
-    margin-bottom: 1.25rem;
-    text-transform: uppercase;
-  }
-  h1 .highlight {
-    background: linear-gradient(135deg, #60A5FA, #A78BFA);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero-sub {
-    font-size: 1.1rem; color: var(--muted); max-width: 560px;
-    line-height: 1.7; margin-bottom: 2.5rem; position: relative; z-index: 1;
-  }
-  .hero-sub strong { color: var(--text); font-weight: 600; }
-  .hero-cta { display: flex; gap: 14px; justify-content: center; position: relative; z-index: 1; flex-wrap: wrap; }
-  .btn-big {
-    padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; text-decoration: none; transition: all 0.2s;
-    border: none;
-  }
-  .btn-big-primary {
-    background: var(--blue); color: #fff;
-  }
-  .btn-big-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
-  .btn-big-ghost {
-    background: transparent; color: var(--text);
-    border: 1.5px solid var(--border);
-  }
-  .btn-big-ghost:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
-
-  /* STATS */
-  .stats {
-    display: flex; justify-content: center; gap: 3rem;
-    padding: 2.5rem 2rem; border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    position: relative; z-index: 1;
-  }
-  .stat { text-align: center; }
-  .stat-num { font-size: 2rem; font-weight: 900; color: #fff; line-height: 1; }
-  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
-
-  /* VIDEO STRIP */
-  .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
-  .section-header {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
-  }
-  .section-tag {
-    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px;
-  }
-  h2 { font-size: 2rem; font-weight: 800; color: #fff; }
-  .see-all { color: var(--accent); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
-  .see-all:hover { text-decoration: underline; }
-
-  .videos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-  }
-  .video-card {
-    border-radius: 12px; overflow: hidden;
-    background: var(--card);
-    border: 1px solid var(--border);
-    transition: transform 0.2s, border-color 0.2s;
-    cursor: pointer;
-  }
-  .video-card:hover { transform: translateY(-3px); border-color: rgba(96,165,250,0.3); }
-  .thumb {
-    aspect-ratio: 16/9;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; font-weight: 900;
-    font-family: 'Black Han Sans', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
-  }
-  .thumb-1 { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #60A5FA; }
-  .thumb-2 { background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #34D399; }
-  .thumb-3 { background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%); color: #FCA5A5; }
-  .thumb-4 { background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%); color: #93C5FD; }
-  .thumb-badge {
-    position: absolute; top: 10px; right: 10px;
-    padding: 3px 8px; border-radius: 4px;
-    background: rgba(0,0,0,0.7); color: #fff;
-    font-size: 0.7rem; font-weight: 600; font-family: 'Inter', sans-serif;
-  }
-  .play-btn {
-    position: absolute; bottom: 10px; left: 10px;
-    width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(255,255,255,0.15); backdrop-filter: blur(4px);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .play-btn svg { width: 14px; height: 14px; fill: #fff; margin-left: 2px; }
-  .video-info { padding: 0.875rem 1rem; }
-  .video-title { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
-  .video-meta { font-size: 0.75rem; color: var(--muted); }
-
-  /* PRODUCTS SECTION */
-  .products-section {
-    padding: 5rem 2rem;
-    background: var(--dark2);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-  }
-  .products-inner { max-width: 1200px; margin: 0 auto; }
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1.25rem;
-    margin-top: 2rem;
-  }
-  .product-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.5rem;
-    transition: transform 0.2s, border-color 0.2s;
-    cursor: pointer;
-  }
-  .product-card:hover { transform: translateY(-3px); border-color: rgba(96,165,250,0.3); }
-  .product-icon {
-    width: 48px; height: 48px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem; margin-bottom: 1rem;
-  }
-  .icon-blue { background: rgba(59,130,246,0.15); }
-  .icon-purple { background: rgba(124,58,237,0.15); }
-  .icon-teal { background: rgba(20,184,166,0.15); }
-  .icon-amber { background: rgba(245,158,11,0.15); }
-  .product-name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .product-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
-  .product-price {
-    font-size: 1.25rem; font-weight: 800; color: #fff;
-    display: flex; align-items: baseline; gap: 4px;
-  }
-  .product-price .currency { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
-  .product-price .old { font-size: 0.8rem; color: var(--muted); text-decoration: line-through; font-weight: 400; }
-  .badge-sale {
-    display: inline-block; padding: 2px 8px; border-radius: 4px;
-    background: rgba(239,68,68,0.2); color: #FCA5A5;
-    font-size: 0.7rem; font-weight: 700; margin-left: 8px;
-  }
-
-  /* COMMUNITY */
-  .community {
-    max-width: 1200px; margin: 5rem auto; padding: 0 2rem;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;
-  }
-  .community-text h2 { margin-bottom: 1rem; }
-  .community-text p { color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
-  .discord-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 12px 24px; border-radius: 10px;
-    background: #5865F2; color: #fff;
-    font-weight: 700; text-decoration: none; font-size: 0.95rem;
-    transition: opacity 0.2s;
-  }
-  .discord-btn:hover { opacity: 0.9; }
-  .discord-btn svg { width: 20px; height: 20px; fill: #fff; }
-  .community-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-  }
-  .members-row {
-    display: flex; align-items: center; gap: -8px; margin-bottom: 1rem;
-  }
-  .avatar {
-    width: 38px; height: 38px; border-radius: 50%;
-    border: 2px solid var(--dark);
-    margin-left: -8px; font-size: 0.85rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .av1 { background: #3B82F6; color: #fff; margin-left: 0; }
-  .av2 { background: #8B5CF6; color: #fff; }
-  .av3 { background: #EC4899; color: #fff; }
-  .av4 { background: #10B981; color: #fff; }
-  .av5 { background: #F59E0B; color: #fff; }
-  .av-more { background: var(--dark3); color: var(--muted); font-size: 0.75rem; }
-  .online-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.78rem; color: #34D399; margin-bottom: 0.75rem;
-  }
-  .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; }
-  .community-stat-row { display: flex; gap: 2rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
-  .cs-num { font-size: 1.4rem; font-weight: 800; color: #fff; }
-  .cs-label { font-size: 0.75rem; color: var(--muted); }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2.5rem;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 1rem;
-  }
-  footer .logo { font-size: 1.2rem; }
-  .footer-links { display: flex; gap: 2rem; }
-  .footer-links a { color: var(--muted); font-size: 0.85rem; text-decoration: none; }
-  .footer-links a:hover { color: var(--text); }
-  .footer-copy { color: var(--muted); font-size: 0.78rem; }
-
-  @media (max-width: 768px) {
-    nav { padding: 0 1.25rem; }
-    .stats { gap: 1.5rem; flex-wrap: wrap; }
-    .community { grid-template-columns: 1fr; }
-    .footer-links { display: none; }
-  }
-</style>
-</head>
-<body>
-
-<!-- NAV -->
-<nav>
-  <a class="logo" href="#">GFX<span>OP4</span></a>
-  <div class="nav-right">
-    <a class="btn-outline" href="#">Discord</a>
-    <a class="btn-primary" href="#">View Products</a>
+/* ─── SHARED BG ORBS ─── */
+const BgOrbs = () => (
+  <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <motion.div className="absolute w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20"
+      animate={{ x: [0,60,-40,0], y: [0,-60,40,0] }} transition={{ duration: 22, repeat: Infinity }}
+      style={{ top:'8%', right:'8%' }} />
+    <motion.div className="absolute w-80 h-80 bg-indigo-600 rounded-full filter blur-3xl opacity-15"
+      animate={{ x: [0,-40,60,0], y: [0,60,-40,0] }} transition={{ duration: 28, repeat: Infinity }}
+      style={{ bottom:'10%', left:'5%' }} />
+    <motion.div className="absolute w-64 h-64 bg-blue-800 rounded-full filter blur-3xl opacity-10"
+      animate={{ x: [0,30,-30,0], y: [0,-30,30,0] }} transition={{ duration: 18, repeat: Infinity }}
+      style={{ top:'50%', left:'45%' }} />
   </div>
-</nav>
+);
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
+/* ─── PAGE TRANSITION WRAPPER ─── */
+const Page = ({ children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -16 }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
+    className="relative z-10"
+  >
+    {children}
+  </motion.div>
+);
 
-  <div class="eyebrow">✦ Premium GFX Resources</div>
-  <h1>Take Your Roblox GFX<br>to <span class="highlight">New Heights</span></h1>
-  <p class="hero-sub">
-    The hub we all <strong>needed</strong> starting out. Premium GFX assets,
-    step-by-step tutorials, and a friendly community that actually helps you grow.
-  </p>
-  <div class="hero-cta">
-    <a class="btn-big btn-big-primary" href="#">View Products</a>
-    <a class="btn-big btn-big-ghost" href="#">Watch Tutorials</a>
-  </div>
-
-  <div class="stats" style="width:100%; max-width:700px; margin-top:4rem;">
-    <div class="stat">
-      <div class="stat-num">12K+</div>
-      <div class="stat-label">Community Members</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">200+</div>
-      <div class="stat-label">Premium Assets</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">50+</div>
-      <div class="stat-label">Tutorials</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">4.9★</div>
-      <div class="stat-label">Average Rating</div>
-    </div>
-  </div>
-</section>
-
-<!-- VIDEOS -->
-<div class="section">
-  <div class="section-header">
-    <div>
-      <div class="section-tag">Latest Content</div>
-      <h2>Featured Tutorials</h2>
-    </div>
-    <a class="see-all" href="#">See all tutorials →</a>
-  </div>
-  <div class="videos-grid">
-    <div class="video-card">
-      <div class="thumb thumb-1">
-        HOW TO LIGHT
-        <div class="thumb-badge">12:34</div>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">The Ultimate Roblox GFX Lighting Tutorial</div>
-        <div class="video-meta">48K views · 2 weeks ago</div>
-      </div>
-    </div>
-    <div class="video-card">
-      <div class="thumb thumb-2">
-        MOBILE GFX
-        <div class="thumb-badge">8:51</div>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">How To Make Roblox GFX On Mobile (2025)</div>
-        <div class="video-meta">31K views · 1 month ago</div>
-      </div>
-    </div>
-    <div class="video-card">
-      <div class="thumb thumb-3">
-        THUMBNAIL
-        <div class="thumb-badge">15:22</div>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">I Tried Remaking a MrBeast Thumbnail in Roblox</div>
-        <div class="video-meta">92K views · 3 weeks ago</div>
-      </div>
-    </div>
-    <div class="video-card">
-      <div class="thumb thumb-4">
-        POSES
-        <div class="thumb-badge">9:17</div>
-        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div class="video-info">
-        <div class="video-title">Best Character Poses for Roblox GFX Beginners</div>
-        <div class="video-meta">22K views · 5 days ago</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PRODUCTS -->
-<div class="products-section">
-  <div class="products-inner">
-    <div class="section-header">
-      <div>
-        <div class="section-tag">Shop</div>
-        <h2>Premium Assets</h2>
-      </div>
-      <a class="see-all" href="#">Browse all products →</a>
-    </div>
-    <div class="products-grid">
-      <div class="product-card">
-        <div class="product-icon icon-blue">💡</div>
-        <div class="product-name">Lighting Pack Pro</div>
-        <div class="product-desc">27 professional HDRI environments and studio lighting setups for Blender.</div>
-        <div class="product-price">
-          <span class="currency">$</span>14.99
-          <span class="old">$24.99</span>
-          <span class="badge-sale">−40%</span>
+/* ══════════════════════════════════════════
+   HOME PAGE
+══════════════════════════════════════════ */
+const HomePage = ({ navigate }) => {
+  const services = [
+    { icon: '✨', title: 'Logo Design', desc: 'Timeless logos that define your brand' },
+    { icon: '🎨', title: 'Brand Identity', desc: 'Full visual identity systems' },
+    { icon: '📱', title: 'Social Media', desc: 'Eye-catching graphics for every platform' },
+    { icon: '▶️', title: 'YT Thumbnails', desc: 'Click-worthy thumbnails that convert' },
+    { icon: '🎮', title: 'Gaming Graphics', desc: 'Overlays, emotes, stream assets' },
+    { icon: '🌐', title: 'Web Graphics', desc: 'Polished assets for your website' },
+  ];
+  const stats = [
+    { n: '500+', l: 'Projects Delivered' }, { n: '200+', l: 'Happy Clients' },
+    { n: '50+', l: 'Expert Designers' }, { n: '10+', l: 'Years Experience' },
+  ];
+  const testimonials = [
+    { name:'Sarah Mitchell', co:'Tech Innovations Inc.', stars:5, text:'GFX Studio Pro transformed our brand. Creative excellence exceeded all expectations.' },
+    { name:'Marcus Johnson', co:'Esports Community', stars:5, text:'Stream engagement jumped 300% after their gaming graphics. Absolutely unreal quality.' },
+    { name:'Emma Rodriguez', co:'Fashion Boutique', stars:5, text:'Professional, on-time, and incredibly creative. My go-to design studio.' },
+  ];
+  return (
+    <Page>
+      {/* HERO */}
+      <section className="min-h-screen flex items-center justify-center pt-24 pb-16 px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          <motion.span initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.05}}
+            className="inline-block mb-6 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/50 text-blue-300 text-sm font-semibold tracking-wide">
+            ✨ Award-Winning Design Studio
+          </motion.span>
+          <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.12}}
+            className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
+            Professional Graphic Design Services<br/>
+            <span className="bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+              That Elevate Your Brand
+            </span>
+          </motion.h1>
+          <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
+            className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Custom logos, social media graphics, thumbnails, banners, branding, and visual identity solutions that transform your vision into reality.
+          </motion.p>
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.27}}
+            className="flex flex-wrap gap-4 justify-center mb-10">
+            <motion.button whileHover={{scale:1.05,y:-2}} whileTap={{scale:0.96}}
+              onClick={() => navigate('portfolio')}
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl font-bold text-white shadow-xl shadow-blue-500/40 hover:shadow-blue-500/60 transition-all text-base flex items-center gap-2">
+              View Portfolio <ArrowRight size={18}/>
+            </motion.button>
+            <motion.button whileHover={{scale:1.05,y:-2}} whileTap={{scale:0.96}}
+              onClick={() => navigate('contact')}
+              className="px-8 py-4 border-2 border-blue-500/50 hover:border-blue-400 rounded-xl font-bold text-blue-300 hover:text-white transition-all text-base backdrop-blur-sm bg-white/5 hover:bg-white/10">
+              Get Started
+            </motion.button>
+          </motion.div>
+          {/* Community buttons */}
+          <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.34}}
+            className="flex flex-wrap justify-center gap-3 mb-12">
+            <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer">
+              <motion.span whileHover={{scale:1.06,y:-3}} whileTap={{scale:0.95}}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/50 border border-indigo-500/40 hover:border-indigo-400 text-indigo-200 hover:text-white transition-all font-semibold text-sm cursor-pointer">
+                <DiscordIcon size={18}/> Join Discord · temu_gdy
+              </motion.span>
+            </a>
+            <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer">
+              <motion.span whileHover={{scale:1.06,y:-3}} whileTap={{scale:0.95}}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/40 border border-red-500/40 hover:border-red-400 text-red-200 hover:text-white transition-all font-semibold text-sm cursor-pointer">
+                <RobloxIcon size={18}/> Roblox · Shirt Mongolia
+              </motion.span>
+            </a>
+          </motion.div>
+          {/* Trust badges */}
+          <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}}
+            className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
+            {['500+ Projects','4.9 / 5 Rating','10+ Years Exp.','48h Delivery'].map(b=>(
+              <span key={b} className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block"/>{b}</span>
+            ))}
+          </motion.div>
         </div>
-      </div>
-      <div class="product-card">
-        <div class="product-icon icon-purple">🎭</div>
-        <div class="product-name">Pose Library Bundle</div>
-        <div class="product-desc">100+ rigged character poses compatible with Roblox rigs in Blender.</div>
-        <div class="product-price">
-          <span class="currency">$</span>9.99
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-icon icon-teal">🖼️</div>
-        <div class="product-name">Background Pack Vol. 2</div>
-        <div class="product-desc">50 high-res 4K backgrounds: city, nature, abstract, and fantasy themes.</div>
-        <div class="product-price">
-          <span class="currency">$</span>7.99
-          <span class="old">$12.99</span>
-          <span class="badge-sale">−38%</span>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="product-icon icon-amber">⭐</div>
-        <div class="product-name">Creator Bundle</div>
-        <div class="product-desc">Everything you need: lighting, poses, backgrounds, and bonus Photoshop actions.</div>
-        <div class="product-price">
-          <span class="currency">$</span>29.99
-          <span class="old">$59.99</span>
-          <span class="badge-sale">−50%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+      </section>
 
-<!-- COMMUNITY -->
-<div class="community">
-  <div class="community-text">
-    <div class="section-tag">Community</div>
-    <h2>Join 12,000+ GFX Creators</h2>
-    <p>
-      Get feedback on your work, share your GFX, access exclusive freebies, and connect
-      with creators who are on the same journey. Our Discord is the most active Roblox GFX community out there.
-    </p>
-    <a class="discord-btn" href="#">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.369-.444.85-.608 1.23a18.566 18.566 0 0 0-5.487 0 12.36 12.36 0 0 0-.617-1.23A.077.077 0 0 0 8.562 3c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026 13.83 13.83 0 0 0 1.226-1.963.074.074 0 0 0-.041-.104 13.175 13.175 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.344-1.22.635-1.873.877a.075.075 0 0 0-.041.105c.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.963 19.963 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028z"/></svg>
-      Join the Discord
-    </a>
-  </div>
-  <div class="community-card">
-    <div class="online-badge"><div class="online-dot"></div> 847 online right now</div>
-    <div class="members-row">
-      <div class="avatar av1">JR</div>
-      <div class="avatar av2">MK</div>
-      <div class="avatar av3">SL</div>
-      <div class="avatar av4">TP</div>
-      <div class="avatar av5">RB</div>
-      <div class="avatar av-more">+12K</div>
-    </div>
-    <p style="color: var(--muted); font-size: 0.875rem; line-height: 1.6; margin-top: 0.75rem;">
-      "This community genuinely helped me level up. The feedback I got in #gfx-review changed everything." — <strong style="color: var(--text);">@xBlaze</strong>
-    </p>
-    <div class="community-stat-row">
-      <div>
-        <div class="cs-num">12K+</div>
-        <div class="cs-label">Members</div>
-      </div>
-      <div>
-        <div class="cs-num">300+</div>
-        <div class="cs-label">Posts daily</div>
-      </div>
-      <div>
-        <div class="cs-num">Free</div>
-        <div class="cs-label">To join</div>
-      </div>
-    </div>
-  </div>
-</div>
+      {/* STATS */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((s,i)=>(
+            <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.08}}
+              className="text-center p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-900/10 border border-blue-500/20">
+              <div className="text-3xl md:text-4xl font-extrabold text-blue-400 mb-1">{s.n}</div>
+              <div className="text-gray-400 text-sm">{s.l}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
 
-<!-- FOOTER -->
-<footer>
-  <a class="logo" href="#">GFX<span>OP4</span></a>
-  <div class="footer-links">
-    <a href="#">Tutorials</a>
-    <a href="#">Products</a>
-    <a href="#">Community</a>
-    <a href="#">Discord</a>
-  </div>
-  <div class="footer-copy">© 2025 GFXOP4. All rights reserved.</div>
-</footer>
+      {/* SERVICES PREVIEW */}
+      <section className="py-24 px-6 border-t border-blue-500/15">
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Our <span className="text-blue-400">Services</span></h2>
+            <p className="text-gray-400 max-w-xl mx-auto">Premium design solutions for every need — from logos to full brand systems.</p>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {services.map((s,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.06}}
+                whileHover={{y:-8}} onClick={()=>navigate('services')}
+                className="group p-7 rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-900/40 border border-blue-500/20 hover:border-blue-400/60 transition-all cursor-pointer hover:shadow-lg hover:shadow-blue-500/15">
+                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{s.icon}</div>
+                <h3 className="text-lg font-bold mb-1 group-hover:text-blue-400 transition-colors">{s.title}</h3>
+                <p className="text-gray-400 text-sm">{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center mt-10">
+            <motion.button whileHover={{scale:1.04}} onClick={()=>navigate('services')}
+              className="px-7 py-3 border border-blue-500/50 hover:border-blue-400 rounded-xl text-blue-300 hover:text-white font-semibold transition-all text-sm flex items-center gap-2 mx-auto">
+              View All Services <ArrowRight size={16}/>
+            </motion.button>
+          </div>
+        </div>
+      </section>
 
-</body>
-</html>
+      {/* TESTIMONIALS */}
+      <section className="py-24 px-6 border-t border-blue-500/15">
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Client <span className="text-blue-400">Reviews</span></h2>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.1}}
+                className="p-7 rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-900/40 border border-blue-500/20">
+                <div className="flex gap-1 mb-4">{[...Array(t.stars)].map((_,j)=><Star key={j} size={16} className="fill-yellow-400 text-yellow-400"/>)}</div>
+                <p className="text-gray-300 italic mb-5 text-sm leading-relaxed">"{t.text}"</p>
+                <div className="border-t border-gray-800 pt-4">
+                  <div className="font-bold text-white text-sm">{t.name}</div>
+                  <div className="text-gray-500 text-xs">{t.co}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA BANNER */}
+      <section className="py-20 px-6 border-t border-blue-500/15">
+        <motion.div initial={{opacity:0,scale:0.95}} whileInView={{opacity:1,scale:1}}
+          className="max-w-3xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-br from-blue-600/30 to-blue-900/30 border border-blue-500/50">
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Ready to Elevate Your Brand?</h2>
+          <p className="text-gray-300 mb-8">Join 200+ satisfied clients. Let's build something extraordinary.</p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <motion.button whileHover={{scale:1.05}} onClick={()=>navigate('contact')}
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold text-white shadow-lg shadow-blue-500/40 transition-all">
+              Start Your Project
+            </motion.button>
+            <motion.button whileHover={{scale:1.05}} onClick={()=>navigate('pricing')}
+              className="px-8 py-3 border-2 border-blue-400/60 text-blue-300 hover:text-white hover:border-blue-400 rounded-xl font-bold transition-all">
+              View Pricing
+            </motion.button>
+          </div>
+        </motion.div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   SERVICES PAGE
+══════════════════════════════════════════ */
+const ServicesPage = () => {
+  const services = [
+    { title:'Logo Design', icon:'✨', price:'From $99', desc:'Iconic, custom logos crafted to capture your brand essence and stand out across all media.', features:['Unlimited Concepts','2 Revisions','Source Files Included','24-48h Delivery'] },
+    { title:'Brand Identity', icon:'🎨', price:'From $299', desc:'Complete visual identity — logo, colors, typography, and brand guidelines in one package.', features:['Logo + Color Palette','Typography System','Brand Guidelines PDF','Multiple Formats'] },
+    { title:'Social Media Graphics', icon:'📱', price:'From $49', desc:'Scroll-stopping posts, stories, banners, and reel covers for Instagram, TikTok, Twitter & more.', features:['Platform Optimized','Custom Designs','Fast Delivery','Unlimited Revisions'] },
+    { title:'YouTube Thumbnails', icon:'▶️', price:'From $29', desc:'High-click-through thumbnails designed with proven visual psychology to grow your channel.', features:['CTR-Optimized Design','Matching Style Sets','Bulk Discounts','24h Turnaround'] },
+    { title:'Twitch Graphics', icon:'🟣', price:'From $79', desc:'Full stream packages — overlays, panels, alerts, banners, and offline screens.', features:['Stream Overlays','Alerts & Transitions','Scene Panels','Offline Screen'] },
+    { title:'Discord Graphics', icon:'💬', price:'From $59', desc:'Server banners, channel icons, role icons, and custom emoji sets for your community.', features:['Server Banners','Role & Channel Icons','Custom Emoji Packs','Quick Delivery'] },
+    { title:'Gaming Graphics', icon:'🎮', price:'From $89', desc:'High-energy esports branding, team logos, jersey mockups, and social assets.', features:['Esports Branding','Team Logos','Jersey Mockups','Tournament Kits'] },
+    { title:'Website Graphics', icon:'🌐', price:'From $149', desc:'Hero sections, illustrations, icons, and UI graphics that make your website shine.', features:['Hero Sections','Custom Icons','Web-Optimized Files','Figma/XD Ready'] },
+    { title:'Banner Design', icon:'🖼️', price:'From $39', desc:'Professional banners for YouTube, Twitch, LinkedIn, Twitter — all sizes covered.', features:['All Platform Sizes','Branded Style','Fast Turnaround','Print-Ready Options'] },
+    { title:'Poster Design', icon:'🎭', price:'From $69', desc:'Eye-catching event, promotional, and marketing posters that demand attention.', features:['Custom Artwork','Print & Digital','High Resolution','Multiple Sizes'] },
+    { title:'Flyer Design', icon:'📄', price:'From $39', desc:'Stunning flyers for events, promotions, and announcements — both print and digital.', features:['Double-Sided Option','Print-Ready PDF','Custom Typography','Fast Delivery'] },
+    { title:'Business Cards', icon:'💼', price:'From $39', desc:'Premium business card designs that make a lasting first impression.', features:['Front & Back Design','Print-Ready Files','Multiple Variations','Mockup Preview'] },
+    { title:'Packaging Design', icon:'📦', price:'From $199', desc:'Shelf-ready packaging that tells your brand story and wins customers at a glance.', features:['3D Mockups','Dieline Templates','Print-Ready Files','Brand Aligned'] },
+    { title:'Motion Graphics', icon:'🎬', price:'From $349', desc:'Animated logos, intros, transitions, and explainer videos that bring your brand to life.', features:['Custom Animations','HD / 4K Export','Sound Design','Fast Delivery'] },
+    { title:'Custom Artwork', icon:'🖌️', price:'From $129', desc:'Fully original illustrations, digital paintings, and concept art tailored to your vision.', features:['Fully Custom','Multiple Revisions','Commercial License','High-Res Files'] },
+  ];
+  return (
+    <Page>
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-16">
+            <span className="inline-block mb-4 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-sm font-semibold">15 Professional Services</span>
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-5">Our <span className="text-blue-400">Services</span></h1>
+            <p className="text-gray-400 max-w-2xl mx-auto text-lg">Every design service you need — under one premium studio roof.</p>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((s,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:(i%6)*0.06}}
+                whileHover={{y:-8}}
+                className="group flex flex-col p-7 rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-900/40 border border-blue-500/20 hover:border-blue-400/60 transition-all hover:shadow-xl hover:shadow-blue-500/10">
+                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{s.icon}</div>
+                <h3 className="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">{s.title}</h3>
+                <p className="text-gray-400 text-sm mb-5 leading-relaxed flex-1">{s.desc}</p>
+                <ul className="space-y-1.5 mb-6">
+                  {s.features.map((f,j)=>(
+                    <li key={j} className="flex items-center gap-2 text-sm text-gray-300">
+                      <Check size={14} className="text-blue-400 flex-shrink-0"/>{f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-800">
+                  <span className="font-bold text-blue-400">{s.price}</span>
+                  <motion.button whileHover={{x:4}}
+                    className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 font-semibold transition-colors">
+                    Order <ArrowRight size={15}/>
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   PORTFOLIO PAGE
+══════════════════════════════════════════ */
+const PortfolioPage = () => {
+  const [active, setActive] = useState('All');
+  const cats = ['All','Logos','Branding','Gaming','Social Media','YouTube','Posters'];
+  const projects = [
+    { id:1, cat:'Logos', title:'Apex Tech Logo', emoji:'🔵', rating:4.9, desc:'Minimalist tech rebrand for SaaS startup.' },
+    { id:2, cat:'Branding', title:'Luxe Fashion Identity', emoji:'💎', rating:5, desc:'Full visual identity for luxury clothing label.' },
+    { id:3, cat:'Gaming', title:'Phantom Esports Kit', emoji:'🎮', rating:4.8, desc:'Team branding, overlays, and jersey design.' },
+    { id:4, cat:'Social Media', title:'Growth Campaign Pack', emoji:'📸', rating:4.9, desc:'60-piece social media kit for fashion brand.' },
+    { id:5, cat:'YouTube', title:'TechTalk Channel Brand', emoji:'▶️', rating:4.7, desc:'Thumbnails, banners, and end cards system.' },
+    { id:6, cat:'Branding', title:'Orbit E-Commerce', emoji:'🛍️', rating:5, desc:'Complete brand + packaging system for D2C brand.' },
+    { id:7, cat:'Logos', title:'NovaPay Fintech', emoji:'💳', rating:4.8, desc:'Clean, trustworthy fintech brand mark.' },
+    { id:8, cat:'Posters', title:'Urban Music Festival', emoji:'🎵', rating:4.9, desc:'Poster series for 3-day music event.' },
+    { id:9, cat:'Gaming', title:'Shadowcraft Twitch Pack', emoji:'🟣', rating:5, desc:'Full stream overlay and alert package.' },
+    { id:10, cat:'Social Media', title:'Wellness Brand Content', emoji:'🌿', rating:4.7, desc:'Instagram grid and stories template system.' },
+    { id:11, cat:'YouTube', title:'Cooking Channel Kit', emoji:'🍳', rating:4.8, desc:'Bright, engaging thumbnail style system.' },
+    { id:12, cat:'Posters', title:'Gallery Exhibition', emoji:'🖼️', rating:4.9, desc:'Minimalist art exhibition promotional posters.' },
+  ];
+  const filtered = active==='All' ? projects : projects.filter(p=>p.cat===active);
+  return (
+    <Page>
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-5">Our <span className="text-blue-400">Portfolio</span></h1>
+            <p className="text-gray-400 max-w-xl mx-auto">A curated showcase of our finest work across every category.</p>
+          </motion.div>
+          {/* Filter tabs */}
+          <div className="flex flex-wrap justify-center gap-2 mb-12">
+            {cats.map(c=>(
+              <motion.button key={c} onClick={()=>setActive(c)} whileHover={{scale:1.05}} whileTap={{scale:0.95}}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${active===c?'bg-blue-600 text-white shadow-lg shadow-blue-500/30':'bg-gray-900 text-gray-400 border border-gray-700 hover:border-blue-500/50 hover:text-blue-300'}`}>
+                {c}
+              </motion.button>
+            ))}
+          </div>
+          {/* Grid */}
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filtered.map((p,i)=>(
+                <motion.div key={p.id} layout initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.85}}
+                  transition={{delay:i*0.04}} whileHover={{y:-8}}
+                  className="group relative overflow-hidden rounded-2xl border border-blue-500/20 hover:border-blue-400/60 transition-all cursor-pointer bg-gradient-to-br from-gray-900 to-gray-800">
+                  <div className="aspect-video flex items-center justify-center text-7xl bg-gradient-to-br from-blue-900/30 to-indigo-900/30 group-hover:from-blue-800/40 transition-all">
+                    {p.emoji}
+                  </div>
+                  <motion.div initial={{opacity:0}} whileHover={{opacity:1}}
+                    className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-5">
+                    <div className="inline-block mb-1 px-2 py-0.5 rounded-md bg-blue-600/60 text-blue-200 text-xs font-semibold w-fit">{p.cat}</div>
+                    <h3 className="font-bold text-white text-lg mb-1">{p.title}</h3>
+                    <p className="text-gray-300 text-sm mb-2">{p.desc}</p>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_,j)=><Star key={j} size={13} className={j<Math.floor(p.rating)?'fill-yellow-400 text-yellow-400':'text-gray-600'}/>)}
+                      <span className="text-gray-400 text-xs ml-1">{p.rating}</span>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   PRICING PAGE
+══════════════════════════════════════════ */
+const PricingPage = ({ navigate }) => {
+  const [billing, setBilling] = useState('monthly');
+  const plans = [
+    { name:'Basic', mo:149, yr:119, color:'border-gray-700', btn:'bg-gray-800 hover:bg-gray-700 text-white',
+      features:['1 Design','2 Revisions','48-Hour Delivery','Email Support','Standard Quality','PNG + JPG Files'] },
+    { name:'Standard', mo:349, yr:279, popular:true, color:'border-blue-500', btn:'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/30',
+      features:['3 Designs per Month','5 Revisions','24-Hour Delivery','Priority Email Support','Premium Quality','All File Formats','Brand Consistency Manager'] },
+    { name:'Premium', mo:699, yr:559, color:'border-indigo-500', btn:'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-lg shadow-indigo-500/30',
+      features:['Unlimited Designs','Unlimited Revisions','Same-Day Delivery','Dedicated Designer','24/7 Phone Support','All File Formats','Brand Strategy Session','Analytics Dashboard'] },
+  ];
+  const compareRows = [
+    ['Designs per month','1','3','Unlimited'],
+    ['Revisions','2','5','Unlimited'],
+    ['Delivery time','48 hours','24 hours','Same day'],
+    ['File formats','PNG, JPG','All formats','All formats'],
+    ['Support','Email','Priority Email','24/7 Phone'],
+    ['Dedicated designer','—','—','✓'],
+    ['Brand guidelines','—','✓','✓'],
+    ['Analytics','—','—','✓'],
+  ];
+  return (
+    <Page>
+      <section className="pt-32 pb-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-5">Transparent <span className="text-blue-400">Pricing</span></h1>
+            <p className="text-gray-400 max-w-xl mx-auto mb-8">No hidden fees. No surprises. Pick the plan that fits your goals.</p>
+            <div className="inline-flex rounded-xl bg-gray-900 border border-gray-700 p-1 gap-1">
+              {['monthly','yearly'].map(t=>(
+                <button key={t} onClick={()=>setBilling(t)}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${billing===t?'bg-blue-600 text-white':'text-gray-400 hover:text-white'}`}>
+                  {t==='monthly'?'Monthly':'Yearly (Save 20%)'}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Plans */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+            {plans.map((p,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:24}} animate={{opacity:1,y:0}} transition={{delay:i*0.1}}
+                whileHover={{y:-8}}
+                className={`relative flex flex-col p-8 rounded-2xl bg-gradient-to-br from-gray-900/90 to-gray-900/60 border-2 ${p.color} transition-all`}>
+                {p.popular&&<div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1 bg-blue-600 rounded-full text-xs font-bold text-white shadow-md">⭐ Most Popular</div>}
+                <h3 className="text-2xl font-extrabold mb-2">{p.name}</h3>
+                <div className="mb-6">
+                  <span className="text-5xl font-extrabold">${billing==='monthly'?p.mo:p.yr}</span>
+                  <span className="text-gray-400 text-sm"> /month</span>
+                  {billing==='yearly'&&<div className="text-green-400 text-xs mt-1">Save ${(p.mo-p.yr)*12}/yr</div>}
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  {p.features.map((f,j)=>(
+                    <li key={j} className="flex items-center gap-2.5 text-sm text-gray-300">
+                      <Check size={15} className="text-blue-400 flex-shrink-0"/>{f}
+                    </li>
+                  ))}
+                </ul>
+                <motion.button whileHover={{scale:1.03}} whileTap={{scale:0.97}}
+                  onClick={()=>navigate('contact')}
+                  className={`w-full py-3.5 rounded-xl font-bold transition-all ${p.btn}`}>
+                  Get Started
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Comparison table */}
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="rounded-2xl border border-blue-500/20 overflow-hidden">
+            <div className="grid grid-cols-4 bg-gray-900/80 border-b border-blue-500/20">
+              {['Feature','Basic','Standard','Premium'].map((h,i)=>(
+                <div key={i} className={`p-4 text-sm font-bold ${i===0?'text-gray-400':'text-center text-blue-300'}`}>{h}</div>
+              ))}
+            </div>
+            {compareRows.map((row,i)=>(
+              <div key={i} className={`grid grid-cols-4 border-b border-gray-800/60 ${i%2===0?'bg-gray-900/30':'bg-transparent'}`}>
+                <div className="p-4 text-sm text-gray-400">{row[0]}</div>
+                {row.slice(1).map((cell,j)=>(
+                  <div key={j} className={`p-4 text-sm text-center ${cell==='✓'?'text-blue-400 font-bold':cell==='—'?'text-gray-600':'text-gray-300'}`}>{cell}</div>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+
+          {/* One-time option */}
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}}
+            className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-blue-900/30 to-indigo-900/20 border border-blue-500/30 text-center">
+            <h3 className="text-2xl font-extrabold mb-3">Need a One-Time Project?</h3>
+            <p className="text-gray-400 mb-6">No subscription needed. Contact us with your brief and get a custom quote within 2 hours.</p>
+            <motion.button whileHover={{scale:1.05}} onClick={()=>navigate('contact')}
+              className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold text-white transition-all shadow-lg shadow-blue-500/30">
+              Request a Custom Quote
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   ABOUT PAGE
+══════════════════════════════════════════ */
+const AboutPage = () => {
+  const team = [
+    { name:'Alex Morgan', role:'Creative Director', emoji:'👨‍🎨', exp:'12 Years' },
+    { name:'Sofia Chen', role:'Brand Strategist', emoji:'👩‍💼', exp:'9 Years' },
+    { name:'Jordan Lee', role:'Motion Designer', emoji:'🎬', exp:'7 Years' },
+    { name:'Maya Torres', role:'Illustrator', emoji:'🖌️', exp:'8 Years' },
+  ];
+  const timeline = [
+    { year:'2014', event:'GFX Studio Pro founded with 2 designers and a bold vision.' },
+    { year:'2016', event:'Grew to a team of 10. First international client landed.' },
+    { year:'2018', event:'Launched gaming & esports design division.' },
+    { year:'2020', event:'Went fully remote. 100+ clients served globally.' },
+    { year:'2022', event:'Reached 300+ projects delivered. Expanded into motion graphics.' },
+    { year:'2024', event:'500+ projects, 200+ clients, 50 designers worldwide.' },
+  ];
+  const values = [
+    { icon:<Zap size={22}/>, title:'Speed', desc:'We deliver fast without cutting corners on quality.' },
+    { icon:<Shield size={22}/>, title:'Integrity', desc:'Transparent pricing, honest timelines, real results.' },
+    { icon:<Award size={22}/>, title:'Excellence', desc:'Every pixel is intentional. We raise the bar on every project.' },
+    { icon:<Users size={22}/>, title:'Collaboration', desc:'We treat every client as a creative partner, not just a customer.' },
+    { icon:<TrendingUp size={22}/>, title:'Growth', desc:'Our designs are built to help your brand grow and scale.' },
+    { icon:<Clock size={22}/>, title:'Reliability', desc:'Deadlines are sacred. We always deliver on time.' },
+  ];
+  return (
+    <Page>
+      {/* Hero */}
+      <section className="pt-32 pb-16 px-6 text-center">
+        <div className="max-w-3xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}>
+            <span className="inline-block mb-5 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-500/40 text-blue-300 text-sm font-semibold">Our Story</span>
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-6">About <span className="text-blue-400">GFX Studio Pro</span></h1>
+            <p className="text-gray-400 text-lg leading-relaxed mb-6">
+              We started in 2014 with one belief: great design is the single most powerful tool a brand can have. A decade later, 500+ projects and 200+ clients prove that belief right every single day.
+            </p>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              GFX Studio Pro is home to 50+ world-class designers who obsess over craft, precision, and results. We don't just make things look good — we make brands impossible to ignore.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Mission & Vision */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[
+            { label:'Our Mission', text:'To deliver premium design that drives real business results — on time, on brand, and beyond expectations.' },
+            { label:'Our Vision', text:'To be the world\'s most trusted remote design studio, empowering brands everywhere to tell their story visually.' },
+          ].map((item,i)=>(
+            <motion.div key={i} initial={{opacity:0,x:i===0?-20:20}} whileInView={{opacity:1,x:0}} transition={{delay:0.1}}
+              className="p-8 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-900/10 border border-blue-500/20">
+              <div className="text-blue-400 font-bold text-sm uppercase tracking-widest mb-3">{item.label}</div>
+              <p className="text-gray-300 leading-relaxed">{item.text}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5">
+          {[['500+','Projects'],['200+','Clients'],['50+','Designers'],['10+','Years']].map(([n,l],i)=>(
+            <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.08}}
+              className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20">
+              <div className="text-4xl font-extrabold text-blue-400 mb-1">{n}</div>
+              <div className="text-gray-400 text-sm">{l}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Team */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-5xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-12">
+            <h2 className="text-4xl font-extrabold mb-3">Meet the <span className="text-blue-400">Team</span></h2>
+          </motion.div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            {team.map((m,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.08}}
+                whileHover={{y:-6}}
+                className="p-6 rounded-2xl text-center bg-gradient-to-br from-gray-900/80 to-gray-900/40 border border-blue-500/20 hover:border-blue-400/50 transition-all">
+                <div className="text-5xl mb-3">{m.emoji}</div>
+                <h3 className="font-bold text-white mb-0.5">{m.name}</h3>
+                <p className="text-blue-400 text-sm mb-1">{m.role}</p>
+                <p className="text-gray-500 text-xs">{m.exp} exp.</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Values */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-5xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-12">
+            <h2 className="text-4xl font-extrabold mb-3">What We <span className="text-blue-400">Stand For</span></h2>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            {values.map((v,i)=>(
+              <motion.div key={i} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} transition={{delay:i*0.07}}
+                className="flex gap-4 p-6 rounded-xl bg-gradient-to-br from-gray-900/70 to-gray-900/40 border border-blue-500/20 hover:border-blue-400/50 transition-all">
+                <div className="text-blue-400 flex-shrink-0 mt-0.5">{v.icon}</div>
+                <div>
+                  <h3 className="font-bold mb-1">{v.title}</h3>
+                  <p className="text-gray-400 text-sm">{v.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="py-16 px-6 border-t border-blue-500/15">
+        <div className="max-w-3xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} className="text-center mb-12">
+            <h2 className="text-4xl font-extrabold mb-3">Our <span className="text-blue-400">Journey</span></h2>
+          </motion.div>
+          <div className="relative">
+            <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-blue-500 to-transparent"/>
+            <div className="space-y-8 pl-16">
+              {timeline.map((t,i)=>(
+                <motion.div key={i} initial={{opacity:0,x:-20}} whileInView={{opacity:1,x:0}} transition={{delay:i*0.08}}
+                  className="relative">
+                  <div className="absolute -left-10 top-1 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-blue-500/20"/>
+                  <div className="text-blue-400 text-xs font-bold tracking-widest mb-1">{t.year}</div>
+                  <p className="text-gray-300 text-sm leading-relaxed">{t.event}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   CONTACT PAGE
+══════════════════════════════════════════ */
+const ContactPage = () => {
+  const [sent, setSent] = useState(false);
+  const [form, setForm] = useState({ name:'', email:'', service:'', message:'' });
+  const services = ['Logo Design','Brand Identity','Social Media Graphics','YouTube Thumbnails','Gaming Graphics','Web Graphics','Other'];
+  const handleSend = () => {
+    if (form.name && form.email && form.message) setSent(true);
+  };
+  return (
+    <Page>
+      <section className="pt-32 pb-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className="text-center mb-14">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-5">Get In <span className="text-blue-400">Touch</span></h1>
+            <p className="text-gray-400 max-w-xl mx-auto">Ready to start your project? Reach out through any channel below — we reply within 2 hours.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* Form */}
+            <motion.div initial={{opacity:0,x:-20}} animate={{opacity:1,x:0}} transition={{delay:0.1}}>
+              <AnimatePresence mode="wait">
+                {sent ? (
+                  <motion.div key="success" initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}}
+                    className="flex flex-col items-center justify-center h-full gap-4 py-20 text-center">
+                    <div className="text-6xl">🎉</div>
+                    <h3 className="text-2xl font-extrabold text-white">Message Sent!</h3>
+                    <p className="text-gray-400">We'll get back to you within 2 hours.</p>
+                    <button onClick={()=>{setSent(false);setForm({name:'',email:'',service:'',message:''})}}
+                      className="mt-4 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold text-sm transition-all">
+                      Send Another
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div key="form" className="space-y-4">
+                    <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
+                    <input value={form.name} onChange={e=>setForm({...form,name:e.target.value})}
+                      placeholder="Your Name *" className="w-full px-5 py-3.5 rounded-xl bg-gray-900/70 border border-blue-500/20 focus:border-blue-500 text-white placeholder-gray-600 outline-none transition-colors text-sm"/>
+                    <input value={form.email} onChange={e=>setForm({...form,email:e.target.value})}
+                      placeholder="Your Email *" type="email" className="w-full px-5 py-3.5 rounded-xl bg-gray-900/70 border border-blue-500/20 focus:border-blue-500 text-white placeholder-gray-600 outline-none transition-colors text-sm"/>
+                    <select value={form.service} onChange={e=>setForm({...form,service:e.target.value})}
+                      className="w-full px-5 py-3.5 rounded-xl bg-gray-900/70 border border-blue-500/20 focus:border-blue-500 text-white outline-none transition-colors text-sm appearance-none">
+                      <option value="">Select a Service</option>
+                      {services.map(s=><option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <textarea value={form.message} onChange={e=>setForm({...form,message:e.target.value})}
+                      placeholder="Describe your project... *" rows={5}
+                      className="w-full px-5 py-3.5 rounded-xl bg-gray-900/70 border border-blue-500/20 focus:border-blue-500 text-white placeholder-gray-600 outline-none transition-colors resize-none text-sm"/>
+                    <motion.button whileHover={{scale:1.03}} whileTap={{scale:0.97}} onClick={handleSend}
+                      className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 rounded-xl font-bold text-white transition-all shadow-lg shadow-blue-500/30">
+                      Send Message <ArrowRight className="inline ml-2" size={18}/>
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Contact Info */}
+            <motion.div initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.15}} className="space-y-4">
+              <h2 className="text-2xl font-bold mb-6">Contact & Community</h2>
+
+              {/* Gmail */}
+              <a href="mailto:temuujintemuujin@gmail.com"
+                className="flex items-center gap-4 p-5 rounded-xl bg-gray-900/70 border border-blue-500/20 hover:border-blue-400/60 transition-all group">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <Mail size={22}/>
+                </div>
+                <div>
+                  <div className="text-gray-400 text-xs mb-0.5">Gmail</div>
+                  <div className="font-semibold text-white group-hover:text-blue-300 transition-colors text-sm">temuujintemuujin@gmail.com</div>
+                </div>
+                <ExternalLink size={15} className="ml-auto text-gray-600 group-hover:text-blue-400 transition-colors"/>
+              </a>
+
+              {/* Discord */}
+              <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-4 p-5 rounded-xl bg-indigo-900/30 border border-indigo-500/30 hover:border-indigo-400/70 transition-all group">
+                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <DiscordIcon size={22}/>
+                </div>
+                <div>
+                  <div className="text-gray-400 text-xs mb-0.5">Discord</div>
+                  <div className="font-semibold text-white group-hover:text-indigo-300 transition-colors text-sm">temu_gdy</div>
+                  <div className="text-indigo-400 text-xs">discord.gg/u7hHDFsvT4</div>
+                </div>
+                <ExternalLink size={15} className="ml-auto text-gray-600 group-hover:text-indigo-400 transition-colors"/>
+              </a>
+
+              {/* Roblox */}
+              <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-4 p-5 rounded-xl bg-red-900/20 border border-red-500/30 hover:border-red-400/70 transition-all group">
+                <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <RobloxIcon size={22}/>
+                </div>
+                <div>
+                  <div className="text-gray-400 text-xs mb-0.5">Roblox Community</div>
+                  <div className="font-semibold text-white group-hover:text-red-300 transition-colors text-sm">Shirt Mongolia</div>
+                  <div className="text-red-400 text-xs">opyyp4 · Join our community</div>
+                </div>
+                <ExternalLink size={15} className="ml-auto text-gray-600 group-hover:text-red-400 transition-colors"/>
+              </a>
+
+              {/* Big action buttons */}
+              <div className="grid grid-cols-2 gap-3 pt-4">
+                <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer">
+                  <motion.button whileHover={{scale:1.04,y:-2}} whileTap={{scale:0.97}}
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold text-white transition-all shadow-lg shadow-indigo-500/30 text-sm">
+                    <DiscordIcon size={18}/> Join Discord
+                  </motion.button>
+                </a>
+                <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer">
+                  <motion.button whileHover={{scale:1.04,y:-2}} whileTap={{scale:0.97}}
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-red-600 hover:bg-red-700 font-bold text-white transition-all shadow-lg shadow-red-500/30 text-sm">
+                    <RobloxIcon size={18}/> Roblox
+                  </motion.button>
+                </a>
+              </div>
+
+              {/* Response time badge */}
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-green-500/10 border border-green-500/30">
+                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"/>
+                <span className="text-green-300 text-sm font-semibold">Average response time: under 2 hours</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    </Page>
+  );
+};
+
+/* ══════════════════════════════════════════
+   MAIN APP SHELL
+══════════════════════════════════════════ */
+export default function GFXStudioPro() {
+  const [page, setPage] = useState('home');
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const pages = [
+    { id:'home', label:'Home' },
+    { id:'services', label:'Services' },
+    { id:'portfolio', label:'Portfolio' },
+    { id:'pricing', label:'Pricing' },
+    { id:'about', label:'About' },
+    { id:'contact', label:'Contact' },
+  ];
+
+  const navigate = (p) => { setPage(p); setMobileOpen(false); window.scrollTo({top:0,behavior:'smooth'}); };
+
+  const renderPage = () => {
+    switch(page) {
+      case 'home':      return <HomePage navigate={navigate}/>;
+      case 'services':  return <ServicesPage/>;
+      case 'portfolio': return <PortfolioPage/>;
+      case 'pricing':   return <PricingPage navigate={navigate}/>;
+      case 'about':     return <AboutPage/>;
+      case 'contact':   return <ContactPage/>;
+      default:          return <HomePage navigate={navigate}/>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <BgOrbs/>
+
+      {/* ── NAVBAR ── */}
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/75 border-b border-blue-500/20"
+        initial={{y:-80}} animate={{y:0}} transition={{duration:0.45}}>
+        <div className="max-w-7xl mx-auto px-5 py-3.5 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <motion.button onClick={()=>navigate('home')} whileHover={{scale:1.04}}
+            className="text-xl font-extrabold bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent flex-shrink-0">
+            GFX Studio Pro
+          </motion.button>
+
+          {/* Desktop nav links */}
+          <nav className="hidden md:flex items-center gap-1">
+            {pages.map(p=>(
+              <motion.button key={p.id} onClick={()=>navigate(p.id)} whileHover={{y:-1}}
+                className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${page===p.id?'text-blue-400':'text-gray-400 hover:text-white'}`}>
+                {p.label}
+                {page===p.id&&(
+                  <motion.div layoutId="nav-pill"
+                    className="absolute inset-0 rounded-lg bg-blue-500/15 border border-blue-500/30"/>
+                )}
+              </motion.button>
+            ))}
+          </nav>
+
+          {/* CTA + Mobile toggle */}
+          <div className="flex items-center gap-3">
+            <motion.button whileHover={{scale:1.05}} whileTap={{scale:0.95}}
+              onClick={()=>navigate('contact')}
+              className="hidden sm:flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-500/30">
+              Get Started
+            </motion.button>
+            {/* Hamburger */}
+            <button onClick={()=>setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors">
+              {mobileOpen ? <X size={22}/> : <Menu size={22}/>}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}}
+              className="md:hidden bg-black/95 border-t border-blue-500/20 overflow-hidden">
+              <div className="px-5 py-4 flex flex-col gap-1">
+                {pages.map(p=>(
+                  <button key={p.id} onClick={()=>navigate(p.id)}
+                    className={`text-left px-4 py-3 rounded-xl font-semibold text-sm transition-colors ${page===p.id?'bg-blue-600/20 text-blue-300':'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+                    {p.label}
+                  </button>
+                ))}
+                <div className="flex gap-2 mt-3 pt-3 border-t border-blue-500/20">
+                  <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer" className="flex-1">
+                    <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-semibold text-sm">
+                      <DiscordIcon size={16}/> Discord
+                    </button>
+                  </a>
+                  <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer" className="flex-1">
+                    <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600/20 border border-red-500/30 text-red-300 font-semibold text-sm">
+                      <RobloxIcon size={16}/> Roblox
+                    </button>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
+
+      {/* ── PAGE CONTENT ── */}
+      <main className="relative z-10">
+        <AnimatePresence mode="wait">
+          <React.Fragment key={page}>
+            {renderPage()}
+          </React.Fragment>
+        </AnimatePresence>
+      </main>
+
+      {/* ── FOOTER ── */}
+      <footer className="relative z-10 border-t border-blue-500/20 bg-black/60 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+            <div>
+              <div className="text-xl font-extrabold bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent mb-3">GFX Studio Pro</div>
+              <p className="text-gray-500 text-sm mb-5 leading-relaxed">Premium graphic design services for brands that demand excellence worldwide.</p>
+              <div className="flex flex-wrap gap-2">
+                <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/25 border border-indigo-500/40 text-indigo-300 hover:text-white hover:bg-indigo-600/50 transition-all text-xs font-semibold">
+                  <DiscordIcon size={13}/> Discord
+                </a>
+                <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600/20 border border-red-500/30 text-red-300 hover:text-white hover:bg-red-600/40 transition-all text-xs font-semibold">
+                  <RobloxIcon size={13}/> Roblox
+                </a>
+                <a href="mailto:temuujintemuujin@gmail.com"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600/15 border border-blue-500/30 text-blue-300 hover:text-white hover:bg-blue-600/35 transition-all text-xs font-semibold">
+                  <Mail size={13}/> Gmail
+                </a>
+              </div>
+            </div>
+            {[
+              { title:'Pages', items:[['Services','services'],['Portfolio','portfolio'],['Pricing','pricing'],['About','about'],['Contact','contact']] },
+              { title:'Services', items:[['Logo Design',null],['Brand Identity',null],['Gaming Graphics',null],['Motion Graphics',null]] },
+              { title:'Community', items:null, custom: (
+                <div className="space-y-3 text-sm">
+                  <a href="https://discord.gg/u7hHDFsvT4" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-400 hover:text-indigo-300 transition-colors">
+                    <DiscordIcon size={14}/> Join our Discord
+                  </a>
+                  <a href="https://www.roblox.com/communities/818574194/Shirt-Mongolia#!/about" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-400 hover:text-red-300 transition-colors">
+                    <RobloxIcon size={14}/> Roblox Community
+                  </a>
+                  <a href="mailto:temuujintemuujin@gmail.com" className="flex items-center gap-2 text-gray-400 hover:text-blue-300 transition-colors">
+                    <Mail size={14}/> temuujintemuujin@gmail.com
+                  </a>
+                </div>
+              )},
+            ].map((sec,i)=>(
+              <div key={i}>
+                <h4 className="font-bold text-white mb-4 text-sm tracking-wide">{sec.title}</h4>
+                {sec.custom || (
+                  <ul className="space-y-2.5">
+                    {sec.items.map(([label,pid],j)=>(
+                      <li key={j}>
+                        {pid ? (
+                          <button onClick={()=>navigate(pid)} className="text-gray-400 hover:text-blue-400 transition-colors text-sm">{label}</button>
+                        ) : (
+                          <span className="text-gray-500 text-sm">{label}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-blue-500/20 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-gray-600 text-sm">© 2024 GFX Studio Pro. All rights reserved.</p>
+            <div className="flex gap-5">
+              {['Privacy Policy','Terms of Service','Cookie Policy'].map(item=>(
+                <a key={item} href="#" className="text-gray-600 hover:text-blue-400 transition-colors text-xs">{item}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
